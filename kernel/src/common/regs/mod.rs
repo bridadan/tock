@@ -233,10 +233,6 @@ impl<R: RegisterLongName> FieldValue<u16, R> {
             associated_register: PhantomData,
         }
     }
-
-    pub fn to_u16(&self) -> u16 {
-        self.value
-    }
 }
 
 impl<R: RegisterLongName> From<FieldValue<u16, R>> for u16 {
@@ -253,11 +249,6 @@ impl<R: RegisterLongName> FieldValue<u32, R> {
             associated_register: PhantomData,
         }
     }
-
-    pub fn to_u32(&self) -> u32 {
-        self.value
-    }
-}
 
 impl<R: RegisterLongName> From<FieldValue<u32, R>> for u32 {
     fn from(val: FieldValue<u32, R>) -> u32 {
