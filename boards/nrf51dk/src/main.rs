@@ -2,9 +2,16 @@
 //! kit (DK), a.k.a. the PCA10028. </br>
 //! This is an nRF51422 SoC (a Cortex M0 core with a BLE transceiver) with many
 //! exported pins, LEDs, and buttons. </br>
-//! Currently the kernel provides application alarms, and GPIO. </br>
-//! It will provide a console
-//! once the UART is fully implemented and debugged.
+//!
+//! Currently the kernel provides:
+//!
+//! * Timers
+//! * GPIO
+//! * UART
+//! * AES Encryption
+//! * Bluetooth Low Energy Advertisements
+//! * Temperature Sensor
+//! * True Random Number Generator
 //!
 //! ### Pin configuration
 //! * 0 -> LED1 (pin 21)
@@ -38,6 +45,7 @@
 #![no_std]
 #![no_main]
 #![feature(lang_items, compiler_builtins_lib)]
+#![deny(missing_docs)]
 
 extern crate capsules;
 extern crate compiler_builtins;
@@ -54,6 +62,7 @@ use kernel::hil::uart::UART;
 use nrf5x::pinmux::Pinmux;
 use nrf5x::rtc::{Rtc, RTC};
 
+/// UART Writer
 #[macro_use]
 pub mod io;
 #[allow(dead_code)]
@@ -84,6 +93,7 @@ static mut APP_MEMORY: [u8; 8192] = [0; 8192];
 
 static mut PROCESSES: [Option<kernel::Process<'static>>; NUM_PROCS] = [None];
 
+/// Supported drivers by the platform
 pub struct Platform {
     ble_radio: &'static nrf5x::ble_advertising_driver::BLE<
         'static,
@@ -118,8 +128,10 @@ impl kernel::Platform for Platform {
     }
 }
 
+/// Entry point in the vector table called on hard reset.
 #[no_mangle]
 pub unsafe fn reset_handler() {
+    // Loads relocations and clears BSS
     nrf51::init();
 
     // LEDs
